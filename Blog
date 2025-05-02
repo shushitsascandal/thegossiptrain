@@ -1,0 +1,10 @@
+ gossip-blog/
+├── app/
+│   └── page.tsx          ← paste the code I gave you here
+├── tailwind.config.js
+├── postcss.config.js
+├── tsconfig.json
+├── next.config.js
+├── package.json
+├── globals.css
+└── README.md

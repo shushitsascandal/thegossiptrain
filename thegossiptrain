@@ -1,0 +1,55 @@
+"use client"; import { useState, useEffect } from "react";
+
+const Button = ({ children, ...props }) => ( <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl" {...props}> {children} </button> );
+
+const Input = ({ ...props }) => ( <input className="border p-2 w-full rounded-xl mb-2" {...props} /> );
+
+const Card = ({ children }) => (
+
+  <div className="bg-white shadow rounded-2xl p-4 mb-4">{children}</div>
+);const CardContent = ({ children }) => <div>{children}</div>;
+
+export default function GossipBlogPrototype() { const [hasAccess, setHasAccess] = useState(false); const [code, setCode] = useState(""); const [postText, setPostText] = useState(""); const [weeklyCode, setWeeklyCode] = useState("bluebanana123"); const [isAuthor, setIsAuthor] = useState(false); const [adminCode, setAdminCode] = useState(""); const [posts, setPosts] = useState([ { id: 1, content: "Did you hear what happened in the chemistry lab yesterday?", likes: 3, comments: ["OMG yes!", "Spill more pls"], }, { id: 2, content: "I saw two people sneak into the music room...", likes: 5, comments: ["I KNEW IT!", "Name drop pls"], }, ]);
+
+useEffect(() => { const storedAccess = localStorage.getItem("gossip_access"); if (storedAccess === weeklyCode) setHasAccess(true); }, [weeklyCode]);
+
+const checkCode = () => { if (code === weeklyCode) { setHasAccess(true); localStorage.setItem("gossip_access", code); } };
+
+const checkAdmin = () => { if (adminCode === "authorKey2025") { setIsAuthor(true); } };
+
+const updateWeeklyCode = (newCode) => { setWeeklyCode(newCode); localStorage.removeItem("gossip_access"); setHasAccess(false); };
+
+const addPost = () => { if (postText.trim()) { setPosts([ { id: posts.length + 1, content: postText, likes: 0, comments: [], }, ...posts, ]); setPostText(""); } };
+
+if (typeof window !== "undefined" && window.location.pathname === "/author-access") { return !isAuthor ? ( <div className="min-h-screen bg-blue-50 p-6 flex items-center justify-center"> <div className="bg-white p-6 rounded-2xl shadow max-w-md w-full"> <h2 className="text-xl font-bold mb-4">Author Login</h2> <Input placeholder="Enter admin code" value={adminCode} onChange={(e) => setAdminCode(e.target.value)} /> <Button onClick={checkAdmin} className="mt-4 w-full"> Enter </Button> </div> </div> ) : ( <div className="min-h-screen bg-blue-50 p-6"> <div className="bg-white p-6 rounded-2xl shadow max-w-md mx-auto"> <h2 className="text-xl font-bold mb-4">Set Weekly Access Code</h2> <Input placeholder="New code..." onChange={(e) => updateWeeklyCode(e.target.value)} /> <p className="mt-4 text-sm text-gray-600">Current code: <strong>{weeklyCode}</strong></p> </div> </div> ); }
+
+return ( <div className="min-h-screen bg-blue-50 p-4 text-center"> {!hasAccess ? ( <div className="max-w-md mx-auto mt-20 bg-white p-6 rounded-2xl shadow"> <h1 className="text-xl font-bold mb-4">Enter This Week's Code</h1> <Input placeholder="Enter access code..." value={code} onChange={(e) => setCode(e.target.value)} /> <Button onClick={checkCode} className="mt-4 w-full"> Unlock Gossip </Button> </div> ) : ( <div className="max-w-xl mx-auto"> <h1 className="text-2xl font-semibold mb-4">Gossip Wall</h1>
+
+<div className="bg-white p-4 rounded-2xl shadow mb-6">
+        <Input
+          placeholder="Spill the tea..."
+          value={postText}
+          onChange={(e) => setPostText(e.target.value)}
+        />
+        <Button onClick={addPost} className="mt-2 w-full">
+          Post Anonymously
+        </Button>
+      </div>
+
+      {posts.map((post) => (
+        <Card key={post.id}>
+          <CardContent>
+            <p className="mb-2 text-left">{post.content}</p>
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>{post.likes} Likes</span>
+              <span>{post.comments.length} Comments</span>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )}
+</div>
+
+); }
+
